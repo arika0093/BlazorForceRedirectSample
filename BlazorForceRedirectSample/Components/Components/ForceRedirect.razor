@@ -1,0 +1,54 @@
+﻿@using BlazorForceRedirectSample.Services
+@inject SampleSettingService Service
+@inject NavigationManager Navigation
+@implements IDisposable
+@code {
+    private const string RedirectUrl = "/setting";
+    private IDisposable? registration;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckAndRedirectIfNeeded();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            registration = Navigation.RegisterLocationChangingHandler(OnLocationChanging);
+        }
+    }
+
+    // 初回読み込み時(Reload時など)に現在のURLをチェックし、必要ならリダイレクトする
+    private async Task CheckAndRedirectIfNeeded()
+    {
+        var flag = await CheckIfRedirectNeeded(Navigation.Uri);
+        if(flag)
+        {
+            Navigation.NavigateTo(RedirectUrl);
+        }
+    }
+
+    // ナビゲーションが発生するたびに遷移先のURLをチェックし、必要な場合は遷移を無効化する
+    private async ValueTask OnLocationChanging(LocationChangingContext context)
+    {
+        var flag = await CheckIfRedirectNeeded(context.TargetLocation);
+        if(flag)
+        {
+            context.PreventNavigation();
+        }
+    }
+
+    // リダイレクトが必要かどうかを判定する
+    private async Task<bool> CheckIfRedirectNeeded(string targetUrl)
+    {
+        var isRedirectNeeds = await Service.Check();
+        var alreadyOnRedirectPage = targetUrl.EndsWith(RedirectUrl, StringComparison.OrdinalIgnoreCase);
+        return isRedirectNeeds && !alreadyOnRedirectPage;
+    }
+
+    public void Dispose()
+    {
+        registration?.Dispose();
+    }
+}
