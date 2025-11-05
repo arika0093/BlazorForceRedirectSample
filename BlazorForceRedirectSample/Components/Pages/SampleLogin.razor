@@ -1,0 +1,16 @@
+﻿@using BlazorForceRedirectSample.Services
+@layout BlazorForceRedirectSample.Components.Layout.BlankLayout
+@page "/login"
+
+<MudButton Class="mt-3" Variant="Variant.Filled" Color="Color.Primary" OnClick="OnClick">ログイン(仮)</MudButton>
+
+@inject SampleSettingService Service
+@inject NavigationManager Navigation
+@code {
+    private void OnClick()
+    {
+        // 例えばここでログインするなどして、強制リダイレクトを有効にしたとする
+        Service.ForceRedirectEnabled = true;
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}

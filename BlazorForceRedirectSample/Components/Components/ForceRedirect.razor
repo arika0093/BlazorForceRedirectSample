@@ -1,6 +1,7 @@
 ﻿@using BlazorForceRedirectSample.Services
 @inject SampleSettingService Service
 @inject NavigationManager Navigation
+@inject IDialogService DialogService
 @implements IDisposable
 @code {
     private const string RedirectUrl = "/setting";
@@ -36,6 +37,14 @@
         if(flag)
         {
             context.PreventNavigation();
+            // show message
+            await DialogService.ShowMessageBox(new()
+            {
+                Title = "Redirect Notice",
+                Message = "You are being redirected to the settings page to update your configuration.",
+                YesText = "OK"
+            });
+
         }
     }
 
