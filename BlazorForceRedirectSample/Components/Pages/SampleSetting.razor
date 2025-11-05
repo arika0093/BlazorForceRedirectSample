@@ -1,6 +1,6 @@
 ﻿@using BlazorForceRedirectSample.Services
 @page "/setting"
 
-<MudSwitch @bind-Value="Service.ForceRedirectEnabled" Label="強制リダイレクト有効化" />
+<MudSwitch Color="Color.Success" @bind-Value="Service.ForceRedirectEnabled" Label="強制リダイレクト有効化" />
 
 @inject SampleSettingService Service

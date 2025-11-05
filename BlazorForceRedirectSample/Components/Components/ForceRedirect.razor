@@ -4,6 +4,7 @@
 @inject IDialogService DialogService
 @implements IDisposable
 @code {
+    // 遷移させたいURL
     private const string RedirectUrl = "/setting";
     private IDisposable? registration;
 
@@ -33,11 +34,13 @@
     // ナビゲーションが発生するたびに遷移先のURLをチェックし、必要な場合は遷移を無効化する
     private async ValueTask OnLocationChanging(LocationChangingContext context)
     {
-        var flag = await CheckIfRedirectNeeded(context.TargetLocation);
-        if(flag)
+        // 現在ページが対象ページでないときは無視する
+        var currentFlag = await CheckIfRedirectNeeded(Navigation.Uri);
+        var targetFlag = await CheckIfRedirectNeeded(context.TargetLocation);
+        if(!currentFlag && targetFlag)
         {
             context.PreventNavigation();
-            // show message
+            // 何も出ないと不親切なのでメッセージを表示する
             await DialogService.ShowMessageBox(new()
             {
                 Title = "Redirect Notice",
